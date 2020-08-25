@@ -547,7 +547,7 @@ class Api extends CI_Controller
 			}else{
 				$percent = (int)$percent;
 			}
-			return $data.'-'.$percent.'%';
+			return (int)$data.'-'.$percent.'%';
 		}else{
 			if($type){
 				$data = $data / 60;
