@@ -87,7 +87,7 @@ class Api extends CI_Controller
 				'calls'				=> $this->getGoal($_user['goal_calls'],$calls),
 				'conversations'		=> $this->getGoal($_user['goal_conversation'],$conversations),
 				'seconds'			=> $this->getGoal($_user['goal_minutes'],$seconds,true),
-				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],0)
+				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],($calls / 1))
 			];
 		}else if($type == "date"){
 			$this->db->where('date',$date);
@@ -108,7 +108,7 @@ class Api extends CI_Controller
 				'calls'				=> $this->getGoal($_user['goal_calls'],$calls),
 				'conversations'		=> $this->getGoal($_user['goal_conversation'],$conversations),
 				'seconds'			=> $this->getGoal($_user['goal_minutes'],$seconds,true),
-				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],0)
+				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],($calls / 1))
 			];
 		}else if($type == "total"){
 			$this->db->where('user',$user);
@@ -148,7 +148,7 @@ class Api extends CI_Controller
 				'calls'				=> $this->getGoal($_user['goal_calls'],$calls),
 				'conversations'		=> $this->getGoal($_user['goal_conversation'],$conversations),
 				'seconds'			=> $this->getGoal($_user['goal_minutes'],$seconds,true),
-				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],0)
+				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],($calls / 30))
 			];
 		}else if($type == "week"){
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
@@ -170,7 +170,7 @@ class Api extends CI_Controller
 				'calls'				=> $this->getGoal($_user['goal_calls'],$calls),
 				'conversations'		=> $this->getGoal($_user['goal_conversation'],$conversations),
 				'seconds'			=> $this->getGoal($_user['goal_minutes'],$seconds,true),
-				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],0)
+				'avg_call'			=> $this->getGoal($_user['goal_avg_call'],($calls / 7))
 			];
 		}
 
