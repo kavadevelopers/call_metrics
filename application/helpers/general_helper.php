@@ -106,13 +106,15 @@ function sendMail($mail,$subject,$template)
 {
     $CI =& get_instance();
     $config = Array(
-        'protocol'      => 'smtp',
+        'protocol'      => 'SMTP',
         'smtp_host'     => $CI->config->item('mhost'),
         'smtp_port'     => $CI->config->item('mport'),
         'smtp_user'     => $CI->config->item('muser'),
         'smtp_pass'     => $CI->config->item('mpass'),
         'mailtype'      => 'html',
         'charset'       => 'iso-8859-1',
+        'newline'       => "\r\n",
+        'crlf'          => "\r\n",
         'wordwrap'      => TRUE
     );
     $CI->load->library('email', $config);
