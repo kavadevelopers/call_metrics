@@ -7,11 +7,6 @@ class Api extends CI_Controller
 		$this->load->database();
 	}
 
-	public function team_dashboard()
-	{
-		
-	}
-
 	public function set_goal()
 	{
 		$data = [
@@ -157,17 +152,17 @@ class Api extends CI_Controller
 			];
 		}else if($type == "week"){
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
-			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[0]);
+			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[1]);
 			$this->db->where('user',$user);
 			$calls = $this->db->get('calls')->num_rows();
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
-			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[0]);
+			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[1]);
 			$this->db->where('user',$user);
 			$this->db->where('seconds >','0');
 			$conversations = $this->db->get('calls')->num_rows();
 			$this->db->select_sum('seconds');
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
-			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[0]);
+			$this->db->where('date <=',$this->x_week_range(date('Y-m-d'))[1]);
 			$this->db->where('user',$user);
 			$seconds = $this->db->get('calls')->row()->seconds;
 			if($seconds == null){ $seconds = 0; }
