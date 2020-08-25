@@ -224,7 +224,7 @@ class Api extends CI_Controller
 			$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
 			$otp = $this->generate_otp($user['id'],"join");
 			$link = "https://play.google.com/store/apps/details?id=".$this->input->post('application_id');
-			sendMail($user['email'],"Login OTP",$this->load->view('mail/invitation',['otp' => $otp,'link' => $link],true));
+			sendMail($user['email'],"Join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'link' => $link],true));
 			$json = [
 				'response'		=> 200,
 				'_return'		=> true
