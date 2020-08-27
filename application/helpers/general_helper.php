@@ -104,25 +104,25 @@ function time_elapsed_string($datetime, $full = false) {
 
 function sendMail($mail,$subject,$template)
 {
-    $CI =& get_instance();
-    $config = Array(
-        'protocol'      => 'SMTP',
-        'smtp_host'     => $CI->config->item('mhost'),
-        'smtp_port'     => $CI->config->item('mport'),
-        'smtp_user'     => $CI->config->item('muser'),
-        'smtp_pass'     => $CI->config->item('mpass'),
-        'mailtype'      => 'html',
-        'charset'       => 'iso-8859-1',
-        'newline'       => "\r\n",
-        'crlf'          => "\r\n",
-        'wordwrap'      => TRUE
-    );
-    $CI->load->library('email', $config);
-    $CI->email->set_newline("\r\n");
-    $CI->email->from($CI->config->item('muser'));
-    $CI->email->to($mail);
-    $CI->email->subject($subject);
-    $CI->email->message($template);
-    $CI->email->send();
+    // $CI =& get_instance();
+    // $config = Array(
+    //     'protocol'      => 'smtp',
+    //     'smtp_host'     => $CI->config->item('mhost'),
+    //     'smtp_port'     => $CI->config->item('mport'),
+    //     'smtp_user'     => $CI->config->item('muser'),
+    //     'smtp_pass'     => $CI->config->item('mpass'),
+    //     'mailtype'      => 'html',
+    //     'charset'       => 'iso-8859-1',
+    //     'newline'       => "\r\n",
+    //     'crlf'          => "\r\n",
+    //     'wordwrap'      => TRUE
+    // );
+    // $CI->load->library('email', $config);
+    // $CI->email->set_newline("\r\n");
+    // $CI->email->from($CI->config->item('muser'));
+    // $CI->email->to($mail);
+    // $CI->email->subject($subject);
+    // $CI->email->message($template);
+    // $CI->email->send();
 }
 ?>
