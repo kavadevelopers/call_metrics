@@ -9,7 +9,7 @@ class Api extends CI_Controller
 
 	public function delete_member()
 	{
-		$this->db->where('id',$this->input->post('user'))->update('users',['df' => '1']);
+		$this->db->where('id',$this->input->post('user'))->update('users',['group' => '','admin' => '','status' => '0']);
 
 		$json = [
 			'response'		=> 200,
