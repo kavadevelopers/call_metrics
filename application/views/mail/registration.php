@@ -76,7 +76,7 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h2>Dear <?= $name ?> ,<br> Thank you for registering with <strong style="color: #ea5e17;"> Call Metrics </strong> powered by <a href="http://www.shoptexto.com" target="_blank">www.shoptexto.com</a>. Please use the OTP below to compete your account activation  and get strated. </h2>
+		<h2>Dear <?= $name ?>,<br> Thank you for registering with <strong style="color: #ea5e17;"> Call Metrics </strong> powered by <a href="http://www.shoptexto.com" target="_blank">www.shoptexto.com</a>. Please use the OTP below to compete your account activation  and get strated. </h2>
 		<div class="space">
 		<span>Your OTP</span>
 		<table class="tb-center">

@@ -76,7 +76,7 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h2>Dear <?= $name ?> ,<br> Please use the OTP below to login to <strong style="color: #ea5e17;"> Call Metrics </strong>App.</h2>
+		<h2>Dear <?= $name ?>,<br> Please use the OTP below to login to <strong style="color: #ea5e17;"> Call Metrics </strong>App.</h2>
 		<div class="space">
 		<span>Your OTP</span>
 		<table class="tb-center">
