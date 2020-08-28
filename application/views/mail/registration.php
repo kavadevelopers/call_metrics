@@ -76,7 +76,7 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h2>Dear <?= $name ?> ,<br> Please use the OTP below to login to <strong style="color: #ea5e17;"> Call Metrics </strong>App.</h2>
+		<h2>Dear <?= $name ?> ,<br> Thank you for registering with <strong style="color: #ea5e17;"> Call Metrics </strong> powered by <a href="http://www.shoptexto.com" target="_blank">www.shoptexto.com</a>. Please use the OTP below to compete your account activation  and get strated. </h2>
 		<div class="space">
 		<span>Your OTP</span>
 		<table class="tb-center">
@@ -92,7 +92,6 @@
 			</tr>
 		</table>
         </div>
-		<p></p>
 		<p>
 			This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. You cannot use or forward any attachments in the email. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.
 		</p>

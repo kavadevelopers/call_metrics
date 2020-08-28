@@ -391,9 +391,9 @@ class Api extends CI_Controller
 			];
 			$this->db->insert('users',$data);
 			$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
+			$admin = $this->db->get_where('users',['id' => $admin['admin']])->row_array();
 			$otp = $this->generate_otp($user['id'],"join");
-			$link = "https://play.google.com/store/apps/details?id=".$this->input->post('application_id');
-			sendMail($user['email'],"Join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'link' => $link],true));
+			sendMail($user['email'],"Join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'name' => $user['name'],'admin' => $admin['name']],true));
 			$json = [
 				'response'		=> 200,
 				'_return'		=> true
@@ -567,7 +567,7 @@ class Api extends CI_Controller
 				$this->db->insert('users',$data);
 				$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
 				$otp = $this->generate_otp($user['id']);
-				sendMail($user['email'],"Login OTP",$this->load->view('mail/login',['otp' => $otp],true));
+				sendMail($user['email'],"Registration OTP",$this->load->view('mail/registration',['otp' => $otp,'name' => $this->input->post('name')],true));
 				$json = $this->loginResponse($user,$otp);
 			}else{
 				$json = [
@@ -594,7 +594,7 @@ class Api extends CI_Controller
 				$this->db->insert('users',$data);
 				$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
 				$otp = $this->generate_otp($user['id']);
-				sendMail($user['email'],"Login OTP",$this->load->view('mail/login',['otp' => $otp],true));
+				sendMail($user['email'],"Registration OTP",$this->load->view('mail/registration',['otp' => $otp,'name' => $this->input->post('name')],true));
 				$json = $this->loginResponse($user,$otp);
 			}else{
 				$json = [
@@ -651,7 +651,7 @@ class Api extends CI_Controller
 		if($user){
 
 			$otp = $this->generate_otp($user['id']);
-			sendMail($user['email'],"Login OTP",$this->load->view('mail/login',['otp' => $otp],true));
+			sendMail($user['email'],"Login OTP",$this->load->view('mail/login',['otp' => $otp,'name' => $user['name']],true));
 			$json = $this->loginResponse($user,$otp);
 
 		}else{

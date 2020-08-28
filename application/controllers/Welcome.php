@@ -27,4 +27,10 @@ class Welcome extends CI_Controller {
 			redirect(base_url('welcome'));	
 		}
 	}
+
+	public function test()
+	{
+		$data = ['name' => 'Sample','otp' => '12345678','admin' => 'Admin Name'];
+		$this->load->view('mail/invitation',$data);
+	}
 }
