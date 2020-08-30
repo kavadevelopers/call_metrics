@@ -16,11 +16,11 @@
 			margin-right: auto;
 
 		}
-		h2{
+		h4{
 			padding-bottom: 60px;
 			font-weight: 500;
-			font-size: 30px;
-			line-height: 38px;
+			font-size: 20px;
+			line-height: 20px;
 			color: #3b3939;
 			letter-spacing: 1px;
 		}
@@ -34,7 +34,7 @@
 			padding: 0px;
 			margin: 0px;
 		 }
-		 h2,span,p{
+		 h4,span,p{
 			font-family: 'Raleway', sans-serif;
 		 }
 		 span{
@@ -47,13 +47,13 @@
 		 
 		 td{
 			padding: 6px 8px;
-			font-size: 32px;
+			font-size: 25px;
 		 }
 		 p{
 			color: #ea5e17;
-			font-size: 19px;
+			font-size: 15px;
 			font-weight: 500;
-			line-height: 25px;
+			line-height: 18px;
 
 		   }
 		  img{
@@ -76,7 +76,7 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h2>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #ea5e17;"> Call Metrics </strong> Please use the OTP below and authenticate your account. </h2>
+		<h4>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #ea5e17;"> Call Metrics </strong> Please use the OTP below and authenticate your account. </h4>
 		<div class="space">
 		<span>Your OTP</span>
 		<table class="tb-center">

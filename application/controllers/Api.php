@@ -7,6 +7,486 @@ class Api extends CI_Controller
 		$this->load->database();
 	}
 
+	public function analitics()
+	{
+		$user = $this->input->post('user');
+		$type = $this->input->post('type');
+		if($type == 'Month'){
+
+			$dates = $this->date_range(date('Y-m-1'),date('Y-m-t'),'+1 day','d');
+			$calls = [];
+			foreach ($dates as $key => $value) {
+				$call = $this->db->get_where('calls',['date' => date('Y-m-'.$value),'user' => $user])->num_rows();
+				array_push($calls, ['string' => $value,'value' => $call]);
+			}
+
+			$conversations = [];
+			foreach ($dates as $key => $value) {
+				$call = $this->db->get_where('calls',['date' => date('Y-m-'.$value),'user' => $user, 'seconds >' => '0'])->num_rows();
+				array_push($conversations, ['string' => $value,'value' => $call]);
+			}
+
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, date('Y-m-1'),date('Y-m-t'));	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, date('Y-m-1'),date('Y-m-t'));	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+			
+
+			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this month','yTitle' => 'Calls','xTitle' => 'Date'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this month','yTitle' => 'Conversations','xTitle' => 'Date']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
+
+		}else if($type == 'Trimester'){
+			$start_first = date('Y-m-01',strtotime('-2 month'));
+			$end_first = date('Y-m-t',strtotime('-2 month'));
+			$month_first = date('F',strtotime('-2 month'));
+
+			$start_second = date('Y-m-01',strtotime('-1 month'));
+			$end_second = date('Y-m-t',strtotime('-1 month'));
+			$month_second = date('F',strtotime('-1 month'));
+
+			$start_third = date('Y-m-01');
+			$end_third = date('Y-m-t');
+			$month_third = date('F');
+
+			$calls = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_second,'value' => $call]);
+
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_third,'value' => $call]);
+
+
+			$conversations = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_second,'value' => $call]);
+			
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_third,'value' => $call]);
+
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+
+			//exit;
+			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this tremester','yTitle' => 'Calls','xTitle' => 'Months'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this tremester','yTitle' => 'Conversations','xTitle' => 'Months']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
+
+		}else if($type == 'Quarter'){
+
+			$start_first = date('Y-m-01',strtotime('-3 month'));
+			$end_first = date('Y-m-t',strtotime('-3 month'));
+			$month_first = date('F',strtotime('-3 month'));
+
+			$start_second = date('Y-m-01',strtotime('-2 month'));
+			$end_second = date('Y-m-t',strtotime('-2 month'));
+			$month_second = date('F',strtotime('-2 month'));
+
+			$start_third = date('Y-m-01',strtotime('-1 month'));
+			$end_third = date('Y-m-t',strtotime('-1 month'));
+			$month_third = date('F',strtotime('-1 month'));
+
+			$start_fourth = date('Y-m-01');
+			$end_fourth = date('Y-m-t');
+			$month_fourth = date('F');
+
+			$calls = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_second,'value' => $call]);
+
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_third,'value' => $call]);
+
+			$this->db->where('date >=', $start_fourth);
+			$this->db->where('date <=', $end_fourth);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_fourth,'value' => $call]);
+
+
+			$conversations = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_second,'value' => $call]);
+			
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_third,'value' => $call]);
+
+			$this->db->where('date >=', $start_fourth);
+			$this->db->where('date <=', $end_fourth);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_fourth,'value' => $call]);
+
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_fourth);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_fourth);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+
+			//exit;
+			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this quarter','yTitle' => 'Calls','xTitle' => 'Months'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this quarter','yTitle' => 'Conversations','xTitle' => 'Months']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
+			
+		}else if($type == 'Year'){
+			
+			$start_first = date('Y-m-01',strtotime('-11 month'));
+			$end_first = date('Y-m-t',strtotime('-11 month'));
+			$month_first = date('F',strtotime('-11 month'));
+
+			$start_second = date('Y-m-01',strtotime('-10 month'));
+			$end_second = date('Y-m-t',strtotime('-10 month'));
+			$month_second = date('F',strtotime('-10 month'));
+
+			$start_third = date('Y-m-01',strtotime('-9 month'));
+			$end_third = date('Y-m-t',strtotime('-9 month'));
+			$month_third = date('F',strtotime('-9 month'));
+
+			$start_forth = date('Y-m-01',strtotime('-8 month'));
+			$end_forth = date('Y-m-t',strtotime('-8 month'));
+			$month_forth = date('F',strtotime('-8 month'));
+
+			$start_fifth = date('Y-m-01',strtotime('-7 month'));
+			$end_fifth = date('Y-m-t',strtotime('-7 month'));
+			$month_fifth = date('F',strtotime('-7 month'));
+
+			$start_sixth = date('Y-m-01',strtotime('-6 month'));
+			$end_sixth = date('Y-m-t',strtotime('-6 month'));
+			$month_sixth = date('F',strtotime('-6 month'));
+
+			$start_seven = date('Y-m-01',strtotime('-5 month'));
+			$end_seven = date('Y-m-t',strtotime('-5 month'));
+			$month_seven = date('F',strtotime('-5 month'));
+
+			$start_eight = date('Y-m-01',strtotime('-4 month'));
+			$end_eight = date('Y-m-t',strtotime('-4 month'));
+			$month_eight = date('F',strtotime('-4 month'));
+
+			$start_nine = date('Y-m-01',strtotime('-3 month'));
+			$end_nine = date('Y-m-t',strtotime('-3 month'));
+			$month_nine = date('F',strtotime('-3 month'));
+
+			$start_ten = date('Y-m-01',strtotime('-2 month'));
+			$end_ten = date('Y-m-t',strtotime('-2 month'));
+			$month_ten = date('F',strtotime('-2 month'));
+
+			$start_eleven = date('Y-m-01',strtotime('-1 month'));
+			$end_eleven = date('Y-m-t',strtotime('-1 month'));
+			$month_eleven = date('F',strtotime('-1 month'));
+
+			$start_twelve = date('Y-m-01');
+			$end_twelve = date('Y-m-t');
+			$month_twelve = date('F');
+
+			$calls = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_second,'value' => $call]);
+
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_third,'value' => $call]);
+
+			$this->db->where('date >=', $start_forth);
+			$this->db->where('date <=', $end_forth);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_forth,'value' => $call]);
+
+			$this->db->where('date >=', $start_fifth);
+			$this->db->where('date <=', $end_fifth);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_fifth,'value' => $call]);
+
+			$this->db->where('date >=', $start_sixth);
+			$this->db->where('date <=', $end_sixth);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_sixth,'value' => $call]);
+
+			$this->db->where('date >=', $start_seven);
+			$this->db->where('date <=', $end_seven);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_seven,'value' => $call]);
+
+			$this->db->where('date >=', $start_eight);
+			$this->db->where('date <=', $end_eight);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_eight,'value' => $call]);
+
+			$this->db->where('date >=', $start_nine);
+			$this->db->where('date <=', $end_nine);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_nine,'value' => $call]);
+
+			$this->db->where('date >=', $start_ten);
+			$this->db->where('date <=', $end_ten);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_ten,'value' => $call]);
+
+			$this->db->where('date >=', $start_eleven);
+			$this->db->where('date <=', $end_eleven);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_eleven,'value' => $call]);
+
+			$this->db->where('date >=', $start_twelve);
+			$this->db->where('date <=', $end_twelve);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_twelve,'value' => $call]);
+
+			$conversations = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_second,'value' => $call]);
+
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_third,'value' => $call]);
+
+			$this->db->where('date >=', $start_forth);
+			$this->db->where('date <=', $end_forth);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_forth,'value' => $call]);
+
+			$this->db->where('date >=', $start_fifth);
+			$this->db->where('date <=', $end_fifth);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_fifth,'value' => $call]);
+
+			$this->db->where('date >=', $start_sixth);
+			$this->db->where('date <=', $end_sixth);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_sixth,'value' => $call]);
+
+			$this->db->where('date >=', $start_seven);
+			$this->db->where('date <=', $end_seven);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_seven,'value' => $call]);
+
+			$this->db->where('date >=', $start_eight);
+			$this->db->where('date <=', $end_eight);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_eight,'value' => $call]);
+
+			$this->db->where('date >=', $start_nine);
+			$this->db->where('date <=', $end_nine);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_nine,'value' => $call]);
+
+			$this->db->where('date >=', $start_ten);
+			$this->db->where('date <=', $end_ten);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_ten,'value' => $call]);
+
+			$this->db->where('date >=', $start_eleven);
+			$this->db->where('date <=', $end_eleven);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_eleven,'value' => $call]);
+
+			$this->db->where('date >=', $start_twelve);
+			$this->db->where('date <=', $end_twelve);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_twelve,'value' => $call]);
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_twelve);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_twelve);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+
+			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this year','yTitle' => 'Calls','xTitle' => 'Months'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this year','yTitle' => 'Conversations','xTitle' => 'Months']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
+
+		}
+		$this->response($json);
+	}
+
+	public function getWeekDayInRange($weekday, $dateFromString, $dateToString, $format = 'Y-m-d')
+    {
+        $dateFrom = new \DateTime($dateFromString);
+        $dateTo = new \DateTime($dateToString);
+        $dates = [];
+
+        if ($dateFrom > $dateTo) {
+            return $dates;
+        }
+
+        if (date('N', strtotime($weekday)) != $dateFrom->format('N')) {
+            $dateFrom->modify("next $weekday");
+        }
+
+        while ($dateFrom <= $dateTo) {
+            $dates[] = $dateFrom->format($format);
+            $dateFrom->modify('+1 week');
+        }
+
+        return $dates;
+    }
+
+	function date_range($first, $last, $step = '+1 day', $output_format = 'd/m/Y' ) {
+
+	    $dates = array();
+	    $current = strtotime($first);
+	    $last = strtotime($last);
+
+	    while( $current <= $last ) {
+
+	        $dates[] = date($output_format, $current);
+	        $current = strtotime($step, $current);
+	    }
+
+	    return $dates;
+	}
+
 	public function delete_member()
 	{
 		$this->db->where('id',$this->input->post('user'))->update('users',['group' => '','admin' => '','status' => '0']);
