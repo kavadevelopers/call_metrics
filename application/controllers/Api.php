@@ -903,7 +903,7 @@ class Api extends CI_Controller
 					$this->db->where('user',$user['id'])->where('for','join')->update('otp',['expired' => 'yes']);				
 					$otp = $this->generate_otp($user['id'],"join");
 					$link = "https://play.google.com/store/apps/details?id=".$this->input->post('application_id');
-					sendMail($user['email'],"Login OTP",$this->load->view('mail/invitation',['otp' => $otp'name' => ucfirst($user['name']),'admin' => $admin['name']],true));
+					sendMail($user['email'],"Login OTP",$this->load->view('mail/invitation',['otp' => $otp,'name' => ucfirst($user['name']),'admin' => $admin['name']],true));
 
 					$json = [
 						'response'		=> 200,
@@ -1074,7 +1074,7 @@ class Api extends CI_Controller
 				$this->db->insert('users',$data);
 				$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
 				$otp = $this->generate_otp($user['id']);
-				sendMail($user['email'],"Registration OTP",$this->load->view('mail/registration',['otp' => $otp,'name' => ucfirst($this->input->post('name')));
+				sendMail($user['email'],"Registration OTP",$this->load->view('mail/registration',['otp' => $otp,'name' => ucfirst($this->input->post('name'))]));
 				$json = $this->loginResponse($user,$otp);
 			}else{
 				$json = [
