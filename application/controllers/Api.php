@@ -62,100 +62,18 @@ class Api extends CI_Controller
 			];
 
 		}else if($type == 'Trimester'){
-			$start_first = date('Y-m-01',strtotime('-2 month'));
-			$end_first = date('Y-m-t',strtotime('-2 month'));
-			$month_first = date('F',strtotime('-2 month'));
 
-			$start_second = date('Y-m-01',strtotime('-1 month'));
-			$end_second = date('Y-m-t',strtotime('-1 month'));
-			$month_second = date('F',strtotime('-1 month'));
+			$start_first = $this->getMinusMonth("3","Y-m-01");
+			$end_first = $this->getMinusMonth("3","Y-m-t");
+			$month_first = $this->getMinusMonth("3","F");
 
-			$start_third = date('Y-m-01');
-			$end_third = date('Y-m-t');
-			$month_third = date('F');
+			$start_second = $this->getMinusMonth("2","Y-m-01");
+			$end_second = $this->getMinusMonth("2","Y-m-t");
+			$month_second = $this->getMinusMonth("2","F");
 
-			$calls = [];
-			$this->db->where('date >=', $start_first);
-			$this->db->where('date <=', $end_first);
-			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
-			array_push($calls, ['string' => $month_first,'value' => $call]);
-
-			$this->db->where('date >=', $start_second);
-			$this->db->where('date <=', $end_second);
-			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
-			array_push($calls, ['string' => $month_second,'value' => $call]);
-
-			$this->db->where('date >=', $start_third);
-			$this->db->where('date <=', $end_third);
-			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
-			array_push($calls, ['string' => $month_third,'value' => $call]);
-
-
-			$conversations = [];
-			$this->db->where('date >=', $start_first);
-			$this->db->where('date <=', $end_first);
-			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
-			array_push($conversations, ['string' => $month_first,'value' => $call]);
-
-			$this->db->where('date >=', $start_second);
-			$this->db->where('date <=', $end_second);
-			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
-			array_push($conversations, ['string' => $month_second,'value' => $call]);
-			
-			$this->db->where('date >=', $start_third);
-			$this->db->where('date <=', $end_third);
-			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
-			array_push($conversations, ['string' => $month_third,'value' => $call]);
-
-
-			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-
-			$callsPerDay = [];
-			foreach ($days as $dkey => $dvalue) {
-				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
-				$call = 0;
-				foreach ($day as $key => $value) {
-					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
-				}
-				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
-			}
-
-			$conversationsPerDay = [];
-			foreach ($days as $dkey => $dvalue) {
-				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
-				$call = 0;
-				foreach ($day as $key => $value) {
-					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
-				}
-				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
-			}
-
-
-			//exit;
-			$data = [];
-			array_push($data,	['data' => $calls,'title' => 'Calls in this tremester','yTitle' => 'Calls','xTitle' => 'Months'] );
-			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
-			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this tremester','yTitle' => 'Conversations','xTitle' => 'Months']);
-			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
-			
-
-			$json = [
-				'list'		=> $data
-			];
-
-		}else if($type == 'Quarter'){
-
-			$start_first = date('Y-m-01',strtotime('-3 month'));
-			$end_first = date('Y-m-t',strtotime('-3 month'));
-			$month_first = date('F',strtotime('-3 month'));
-
-			$start_second = date('Y-m-01',strtotime('-2 month'));
-			$end_second = date('Y-m-t',strtotime('-2 month'));
-			$month_second = date('F',strtotime('-2 month'));
-
-			$start_third = date('Y-m-01',strtotime('-1 month'));
-			$end_third = date('Y-m-t',strtotime('-1 month'));
-			$month_third = date('F',strtotime('-1 month'));
+			$start_third = $this->getMinusMonth("1","Y-m-01");
+			$end_third = $this->getMinusMonth("1","Y-m-t");
+			$month_third = $this->getMinusMonth("1","F");
 
 			$start_fourth = date('Y-m-01');
 			$end_fourth = date('Y-m-t');
@@ -204,7 +122,6 @@ class Api extends CI_Controller
 			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
 			array_push($conversations, ['string' => $month_fourth,'value' => $call]);
 
-
 			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
@@ -230,6 +147,91 @@ class Api extends CI_Controller
 
 			//exit;
 			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this tremester','yTitle' => 'Calls','xTitle' => 'Months'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this tremester','yTitle' => 'Conversations','xTitle' => 'Months']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
+
+		}else if($type == 'Quarter'){
+
+			$start_first = $this->getMinusMonth("2","Y-m-01");
+			$end_first = $this->getMinusMonth("2","Y-m-t");
+			$month_first = $this->getMinusMonth("2","F");
+
+			$start_second = $this->getMinusMonth("1","Y-m-01");
+			$end_second = $this->getMinusMonth("1","Y-m-t");
+			$month_second = $this->getMinusMonth("1","F");
+
+			$start_third = date('Y-m-01');
+			$end_third = date('Y-m-t');
+			$month_third = date('F');
+
+			$calls = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_second,'value' => $call]);
+
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user])->num_rows();
+			array_push($calls, ['string' => $month_third,'value' => $call]);
+
+
+			$conversations = [];
+			$this->db->where('date >=', $start_first);
+			$this->db->where('date <=', $end_first);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_first,'value' => $call]);
+
+			$this->db->where('date >=', $start_second);
+			$this->db->where('date <=', $end_second);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_second,'value' => $call]);
+			
+			$this->db->where('date >=', $start_third);
+			$this->db->where('date <=', $end_third);
+			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
+			array_push($conversations, ['string' => $month_third,'value' => $call]);
+
+			
+
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $start_first,$end_third);	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+
+			//exit;
+			$data = [];
 			array_push($data,	['data' => $calls,'title' => 'Calls in this quarter','yTitle' => 'Calls','xTitle' => 'Months'] );
 			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
 			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this quarter','yTitle' => 'Conversations','xTitle' => 'Months']);
@@ -241,50 +243,50 @@ class Api extends CI_Controller
 			];
 			
 		}else if($type == 'Year'){
+
+			$start_first = $this->getMinusMonth("11","Y-m-01");
+			$end_first = $this->getMinusMonth("11","Y-m-t");
+			$month_first = $this->getMinusMonth("11","F");
+
+			$start_second = $this->getMinusMonth("10","Y-m-01");
+			$end_second = $this->getMinusMonth("10","Y-m-t");
+			$month_second = $this->getMinusMonth("10","F");
+
+			$start_third = $this->getMinusMonth("9","Y-m-01");
+			$end_third = $this->getMinusMonth("9","Y-m-t");
+			$month_third = $this->getMinusMonth("9","F");
+
+			$start_forth = $this->getMinusMonth("8","Y-m-01");
+			$end_forth = $this->getMinusMonth("8","Y-m-t");
+			$month_forth = $this->getMinusMonth("8","F");
+
+			$start_fifth = $this->getMinusMonth("7","Y-m-01");
+			$end_fifth = $this->getMinusMonth("7","Y-m-t");
+			$month_fifth = $this->getMinusMonth("7","F");
+
+			$start_sixth = $this->getMinusMonth("6","Y-m-01");
+			$end_sixth = $this->getMinusMonth("6","Y-m-t");
+			$month_sixth = $this->getMinusMonth("6","F");
+
+			$start_seven = $this->getMinusMonth("5","Y-m-01");
+			$end_seven = $this->getMinusMonth("5","Y-m-t");
+			$month_seven = $this->getMinusMonth("5","F");
+
+			$start_eight = $this->getMinusMonth("4","Y-m-01");
+			$end_eight = $this->getMinusMonth("4","Y-m-t");
+			$month_eight = $this->getMinusMonth("4","F");
+
+			$start_nine = $this->getMinusMonth("3","Y-m-01");
+			$end_nine = $this->getMinusMonth("3","Y-m-t");
+			$month_nine = $this->getMinusMonth("3","F");
+
+			$start_ten = $this->getMinusMonth("2","Y-m-01");
+			$end_ten = $this->getMinusMonth("2","Y-m-t");
+			$month_ten = $this->getMinusMonth("2","F");
 			
-			$start_first = date('Y-m-01',strtotime('-11 month'));
-			$end_first = date('Y-m-t',strtotime('-11 month'));
-			$month_first = date('F',strtotime('-11 month'));
-
-			$start_second = date('Y-m-01',strtotime('-10 month'));
-			$end_second = date('Y-m-t',strtotime('-10 month'));
-			$month_second = date('F',strtotime('-10 month'));
-
-			$start_third = date('Y-m-01',strtotime('-9 month'));
-			$end_third = date('Y-m-t',strtotime('-9 month'));
-			$month_third = date('F',strtotime('-9 month'));
-
-			$start_forth = date('Y-m-01',strtotime('-8 month'));
-			$end_forth = date('Y-m-t',strtotime('-8 month'));
-			$month_forth = date('F',strtotime('-8 month'));
-
-			$start_fifth = date('Y-m-01',strtotime('-7 month'));
-			$end_fifth = date('Y-m-t',strtotime('-7 month'));
-			$month_fifth = date('F',strtotime('-7 month'));
-
-			$start_sixth = date('Y-m-01',strtotime('-6 month'));
-			$end_sixth = date('Y-m-t',strtotime('-6 month'));
-			$month_sixth = date('F',strtotime('-6 month'));
-
-			$start_seven = date('Y-m-01',strtotime('-5 month'));
-			$end_seven = date('Y-m-t',strtotime('-5 month'));
-			$month_seven = date('F',strtotime('-5 month'));
-
-			$start_eight = date('Y-m-01',strtotime('-4 month'));
-			$end_eight = date('Y-m-t',strtotime('-4 month'));
-			$month_eight = date('F',strtotime('-4 month'));
-
-			$start_nine = date('Y-m-01',strtotime('-3 month'));
-			$end_nine = date('Y-m-t',strtotime('-3 month'));
-			$month_nine = date('F',strtotime('-3 month'));
-
-			$start_ten = date('Y-m-01',strtotime('-2 month'));
-			$end_ten = date('Y-m-t',strtotime('-2 month'));
-			$month_ten = date('F',strtotime('-2 month'));
-
-			$start_eleven = date('Y-m-01',strtotime('-1 month'));
-			$end_eleven = date('Y-m-t',strtotime('-1 month'));
-			$month_eleven = date('F',strtotime('-1 month'));
+			$start_eleven = $this->getMinusMonth("1","Y-m-01");
+			$end_eleven = $this->getMinusMonth("1","Y-m-t");
+			$month_eleven = $this->getMinusMonth("1","F");
 
 			$start_twelve = date('Y-m-01');
 			$end_twelve = date('Y-m-t');
@@ -448,6 +450,15 @@ class Api extends CI_Controller
 
 		}
 		$this->response($json);
+	}
+
+	public function getMinusMonth($monthValue,$format)
+	{
+		if(date("d") > 28){
+		    return date($format, strtotime("-".$monthValue." months -2 Day"));
+		} else {
+		    return date($format, strtotime("-".$monthValue." months"));
+		}
 	}
 
 	public function getWeekDayInRange($weekday, $dateFromString, $dateToString, $format = 'Y-m-d')
