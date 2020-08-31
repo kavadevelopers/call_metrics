@@ -76,9 +76,9 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h4>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #ea5e17;"> Call Metrics </strong> Please use the OTP below and authenticate your account. </h4>
+		<h4>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #ea5e17;"> Call Metrics </strong> Please use the PIN below and authenticate your account. </h4>
 		<div class="space">
-		<span>Your OTP</span>
+		<span>Your PIN</span>
 		<table class="tb-center">
 			<tr>
 				<td><?= $otp[0] ?></td>
