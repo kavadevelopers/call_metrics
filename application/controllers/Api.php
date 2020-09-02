@@ -448,6 +448,54 @@ class Api extends CI_Controller
 				'list'		=> $data
 			];
 
+		}else if($type == 'Date'){
+			$dates = $this->date_range($this->input->post('from_date'),$this->input->post('to_date'),'+1 day','Y-m-d');
+			$calls = [];
+			foreach ($dates as $key => $value) {
+				$call = $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				array_push($calls, ['string' => $value,'value' => $call]);
+			}
+
+			$conversations = [];
+			foreach ($dates as $key => $value) {
+				$call = $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				array_push($conversations, ['string' => $value,'value' => $call]);
+			}
+
+
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+			$callsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $this->input->post('from_date'),$this->input->post('to_date'));	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
+				}
+				array_push($callsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+
+			$conversationsPerDay = [];
+			foreach ($days as $dkey => $dvalue) {
+				$day = $this->getWeekDayInRange($dvalue, $this->input->post('from_date'),$this->input->post('to_date'));	
+				$call = 0;
+				foreach ($day as $key => $value) {
+					$call += $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
+				}
+				array_push($conversationsPerDay, ['string' => $dvalue,'value' => $call]);
+			}
+			
+
+			$data = [];
+			array_push($data,	['data' => $calls,'title' => 'Calls in this date range','yTitle' => 'Calls','xTitle' => 'Date'] );
+			array_push($data, 	['data' => $callsPerDay,'title' => 'Calls per day','yTitle' => 'Calls','xTitle' => 'Days']);
+			array_push($data, 	['data' => $conversations,'title' => 'Conversations in this date range','yTitle' => 'Conversations','xTitle' => 'Date']);
+			array_push($data, 	['data' => $conversationsPerDay,'title' => 'Conversations per day','yTitle' => 'Conversations','xTitle' => 'Days']);
+			
+
+			$json = [
+				'list'		=> $data
+			];
 		}
 		$this->response($json);
 	}
@@ -573,7 +621,7 @@ class Api extends CI_Controller
 		foreach ($users->result_array() as $key => $value) {
 			$ar = [
 				'id'			=> $value['id'],
-				'name'			=> $value['name']." (".$this->db->get_where('group' ,['id' => $value['group']])->row_array()['name'].')'
+				'name'			=> $value['name']
 			];
 			array_push($list, $ar);
 		}
@@ -590,6 +638,7 @@ class Api extends CI_Controller
 		$user 		= $this->input->post('user');
 		$type 		= $this->input->post('type');
 		$date 		= date('Y-m-d' ,strtotime($this->input->post('date')));
+		$to 		= date('Y-m-d' ,strtotime($this->input->post('to')));
 		if($type == "today"){
 			$this->db->where('date',date('Y-m-d'));
 			$this->db->where('user',$user);
@@ -617,17 +666,20 @@ class Api extends CI_Controller
 				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCall($calls, 1),"30")
 			];
 		}else if($type == "date"){
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$calls = $this->db->get('calls')->num_rows();
 
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$this->db->where('seconds >','0');
 			$conversations = $this->db->get('calls')->num_rows();
 
 			$this->db->select_sum('seconds');
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$seconds = $this->db->get('calls')->row()->seconds;
 			if($seconds == null){ $seconds = 0; }
@@ -636,10 +688,10 @@ class Api extends CI_Controller
 				'conversations'		=> $conversations,
 				'seconds'			=> $this->getMinuts($seconds),
 				'avg_call'			=> $this->getAvgCall($calls, 1),
-				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,"30"),
-				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,"30"),
-				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,"30",true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCall($calls, 1),"30")
+				'goal_calls'		=> "0%",
+				'goal_conver'		=> "0%",
+				'goal_minute'		=> "0%",
+				'goal_avg_call'		=> "0%"
 			];
 		}else if($type == "total"){
 			$this->db->where('user',$user);
@@ -726,6 +778,7 @@ class Api extends CI_Controller
 		$user 		= $this->input->post('user');
 		$type 		= $this->input->post('type');
 		$date 		= date('Y-m-d' ,strtotime($this->input->post('date')));
+		$to 		= date('Y-m-d' ,strtotime($this->input->post('to')));
 		if($type == "today"){
 			$this->db->where('date',date('Y-m-d'));
 			$this->db->where('user',$user);
@@ -749,17 +802,20 @@ class Api extends CI_Controller
 				'avg_call'			=> $this->getAvgCall($calls, 1)
 			];
 		}else if($type == "date"){
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$calls = $this->db->get('calls')->num_rows();
 
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$this->db->where('seconds >','0');
 			$conversations = $this->db->get('calls')->num_rows();
 
 			$this->db->select_sum('seconds');
-			$this->db->where('date',$date);
+			$this->db->where('date >=',$date);
+			$this->db->where('date <=',$to);
 			$this->db->where('user',$user);
 			$seconds = $this->db->get('calls')->row()->seconds;
 			if($seconds == null){ $seconds = 0; }
@@ -862,77 +918,6 @@ class Api extends CI_Controller
 		}
 	}
 
-	public function send_invite()
-	{
-
-		$user = $this->db->get_where('users',['email' => $this->input->post('email') ,'id !=' => $this->input->post('id')])->row_array();
-
-		if(!$user){
-			$data = [
-				'name'			=> ucfirst($this->input->post('name')),
-				'company'		=> "",
-				'email'			=> $this->input->post('email'),
-				'phone'			=> $this->input->post('phone'),
-				'code'			=> $this->input->post('code'),
-				'type'			=> "individual",
-				'created_at'	=> date('Y-m-d H:i:s'),
-				'last_fetched'	=> date('Y-m-d H:i:s'),
-				'group'			=> $this->input->post('group'), 
-				'admin'			=> $this->input->post('id')
-			];
-			$this->db->insert('users',$data);
-			$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
-			$admin = $this->db->get_where('users',['id' => $this->input->post('id')])->row_array();
-			$otp = $this->generate_otp($user['id'],"join");
-			sendMail($user['email'],"Join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'name' => ucfirst($user['name']),'admin' => $admin['name']],true));
-			$json = [
-				'response'		=> 200,
-				'_return'		=> true
-			];
-		}else if($user['status'] == "1"){
-
-			$json = [
-				'response'		=> 200,
-				'_return'		=> false,
-				'message'		=> ""
-			];	
-
-		}else{
-			if($user['type'] == "company"){
-				$json = [
-					'response'		=> 200,
-					'_return'		=> false,
-					'message'		=> 'company'
-				];	
-			}else if($user['type'] == "individual"){
-				if($user['status'] != "1"){
-					$data = [
-						'group'			=> $this->input->post('group'), 
-						'admin'			=> $this->input->post('id')
-					];
-					$this->db->where('id',$user['id'])->update('users',$data);
-					$this->db->where('user',$user['id'])->where('for','join')->update('otp',['expired' => 'yes']);				
-					$admin = $this->db->get_where('users',['id' => $this->input->post('id')])->row_array();
-					$otp = $this->generate_otp($user['id'],"join");
-					sendMail($user['email'],"Login PIN",$this->load->view('mail/invitation',['otp' => $otp,'name' => ucfirst($user['name']),'admin' => $admin['name']],true));
-
-					$json = [
-						'response'		=> 200,
-						'_return'		=> true
-					];
-				}else{
-					$json = [
-						'response'		=> 200,
-						'_return'		=> false,
-						'message'		=> ""
-					];			
-				}
-			}
-		}
-		
-		$this->response($json);
-	}
-
 	public function delete_group()
 	{
 		$this->db->where('id',$this->input->post('group'))->update('group',['df' => '1']);
@@ -1024,101 +1009,134 @@ class Api extends CI_Controller
 		$this->response($json);
 	}
 
-	public function register()
+	public function send_invite()
 	{
-		if($this->input->post('type') == "company"){
-			$user = $this->db->get_where('users',['email' => $this->input->post('email'),'df' => ''])->row_array();
-			if(!$user){
-				$data = [
-					'name'			=> ucfirst($this->input->post('name')),
-					'company'		=> $this->input->post('company'),
-					'email'			=> $this->input->post('email'),
-					'phone'			=> $this->input->post('phone'),
-					'code'			=> $this->input->post('code'),
-					'type'			=> $this->input->post('type'),
-					'created_at'	=> date('Y-m-d H:i:s'),
-					'last_fetched'	=> date('Y-m-d H:i:s')
-				];
-				$this->db->insert('users',$data);
-				$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
-				$otp = $this->generate_otp($user['id']);
-				sendMail($user['email'],"Registration PIN",$this->load->view('mail/registration',['otp' => $otp,'name' => ucfirst($this->input->post('name'))],true));
-				$json = $this->loginResponse($user,$otp);
-			}else{
-				$json = [
-					'response'		=> 200,
-					'_return'		=> false,
-					'message'		=> "user"
-				];
-			}
-			$this->response($json);
-		}else if($this->input->post('type') == "individual"){
+		$user = $this->db->get_where('users',['email' => $this->input->post('email')])->row_array();
 
-			$user = $this->db->get_where('users',['email' => $this->input->post('email'),'df' => ''])->row_array();
-			if(!$user){
-				$data = [
-					'name'			=> ucfirst($this->input->post('name')),
-					'company'		=> "",
-					'email'			=> $this->input->post('email'),
-					'phone'			=> $this->input->post('phone'),
-					'code'			=> $this->input->post('code'),
-					'type'			=> $this->input->post('type'),
-					'created_at'	=> date('Y-m-d H:i:s'),
-					'last_fetched'	=> date('Y-m-d H:i:s')
-				];
-				$this->db->insert('users',$data);
-				$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
-				$otp = $this->generate_otp($user['id']);
-				sendMail($user['email'],"Registration PIN",
-					$this->load->view('mail/registration',['otp' => $otp,'name' => ucfirst($this->input->post('name'))],true)
-				);
-				$json = $this->loginResponse($user,$otp);
-			}else{
-				$json = [
-					'response'		=> 200,
-					'_return'		=> false,
-					'message'		=> "user"
-				];
-			}
-			$this->response($json);
+		if(!$user){
+			$data = [
+				'name'			=> ucfirst($this->input->post('name')),
+				'company'		=> "",
+				'email'			=> strtolower($this->input->post('email')),
+				'phone'			=> $this->input->post('phone'),
+				'code'			=> $this->input->post('code'),
+				'type'			=> "individual",
+				'created_at'	=> date('Y-m-d H:i:s'),
+				'last_fetched'	=> date('Y-m-d H:i:s'),
+				'group'			=> $this->input->post('group'), 
+				'admin'			=> $this->input->post('id')
+			];
+			$this->db->insert('users',$data);
 
+			$user = $this->db->get_where('users',['id' => $this->db->insert_id()])->row_array();
+			$admin = $this->db->get_where('users',['id' => $this->input->post('id')])->row_array();
+			$otp = $this->generate_otp($user['id'],"join");
+			sendMail($user['email'],"Team join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'name' => $user['name'],'admin' => $admin['name']],true));
+			$json = [
+				'response'		=> 200,
+				'_return'		=> true
+			];
+
+		}else if($user['status'] == "0" && $this->membersCount($user['id']) == 0){
+
+			$data = [
+				'group'			=> $this->input->post('group'), 
+				'admin'			=> $this->input->post('id')
+			];
+			$this->db->where('id',$user['id'])->update('users',$data);
+			$this->db->where('user',$user['id'])->where('for','join')->update('otp',['expired' => 'yes']);	
+			$admin = $this->db->get_where('users',['id' => $this->input->post('id')])->row_array();
+			$otp = $this->generate_otp($user['id'],"join");
+			sendMail($user['email'],"Team join Invitation",$this->load->view('mail/invitation',['otp' => $otp,'name' => $user['name'],'admin' => $admin['name']],true));
+
+			$json = [
+				'response'		=> 200,
+				'_return'		=> true
+			];
 		}else{
+			$json = [
+				'response'		=> 200,
+				'_return'		=> false
+			];		
+		}
 
-			$user = $this->db->get_where('users',['email' => $this->input->post('email'),'df' => ''])->row_array();
-			if($user){
-				if($user['status'] == '0'){
-					$cotp = $this->db->get_where('otp',['otp' => $this->input->post('otp'),'user' => $user['id'],'expired' => ''])->num_rows();
-					if($cotp > 0){
+		$this->response($json);
+	}
 
-						$this->db->where('user',$user['id'])->where('for','join')->update('otp',['expired' => 'yes']);
-						$this->db->where('id',$user['id'])->update('users',['status' => '1']);
+	public function join_team()
+	{
+		$user = $this->db->get_where('users',['email' => $this->input->post('email')])->row_array();
+		if($user){
+			if($user['status'] == '0'){
+				$cotp = $this->db->get_where('otp',['otp' => $this->input->post('otp'),'user' => $user['id'],'expired' => ''])->num_rows();
+				if($cotp > 0){
 
-						$json = $this->loginResponse($user,"");	
+					$this->db->where('user',$user['id'])->where('for','join')->update('otp',['expired' => 'yes']);
+					$this->db->where('id',$user['id'])->update('users',['status' => '1']);
+					$user = $this->db->get_where('users',['email' => $this->input->post('email')])->row_array();
+					$json = $this->loginResponse($user,"");	
 
-					}else{
-						$json = [
-							'response'		=> 200,
-							'message'		=> "otp",
-							'_return'		=> false
-						];	
-					}
 				}else{
 					$json = [
 						'response'		=> 200,
-						'message'		=> "join",
+						'message'		=> "otp",
 						'_return'		=> false
 					];	
 				}
-
 			}else{
 				$json = [
 					'response'		=> 200,
-					'message'		=> "user",
+					'message'		=> "join",
 					'_return'		=> false
-				];
+				];	
 			}
-			$this->response($json);
+		}else{
+			$json = [
+				'response'		=> 200,
+				'message'		=> "user",
+				'_return'		=> false
+			];
 		}
+		$this->response($json);
+	}
+
+	public function register()
+	{
+		$user = $this->db->get_where('users',['email' => $this->input->post('email')])->row_array();
+		if(!$user){
+			$data = [
+				'name'			=> ucfirst($this->input->post('name')),
+				'company'		=> ucfirst($this->input->post('company')),
+				'email'			=> strtolower($this->input->post('email')),
+				'phone'			=> $this->input->post('phone'),
+				'code'			=> $this->input->post('code'),
+				'type'			=> strtolower($this->input->post('type')),
+				'created_at'	=> date('Y-m-d H:i:s'),
+				'last_fetched'	=> date('Y-m-d H:i:s')
+			];
+			$this->db->insert('users',$data);
+			$user_id = $this->db->insert_id();
+			
+			$gorup_count = $this->db->get('group')->num_rows();
+			$groupdata = [
+				'name'			=> ($gorup_count + 1).$user_id.rand ( 100000 , 999999 ),
+				'user'			=> $user_id,
+				'created_at'	=> date('Y-m-d H:i:s')
+			];
+			$this->db->insert('group',$groupdata);
+
+			$user = $this->db->get_where('users',['id' => $user_id])->row_array();
+			$otp = $this->generate_otp($user['id'],"register");
+			sendMail($user['email'],"Registration PIN",$this->load->view('mail/registration',['otp' => $otp,'name' => $this->input->post('name')],true));
+			
+			$json = $this->loginResponse($user,$otp);
+		}else{
+			$json = [
+				'response'		=> 200,
+				'_return'		=> false
+			];
+		}
+		$this->response($json);
 	}
 
 
@@ -1147,39 +1165,69 @@ class Api extends CI_Controller
 		$this->response($json);
 	}
 
-
 	public function loginResponse($user,$otp)
 	{
 		$data = [
-				'response'				=> 200,
-				'_return'				=> true,
-				'otp'					=> $otp,
-				'id'					=> $user['id'],	
-				'name'					=> $user['name'],	
-				'company'				=> $user['company'],	
-				'code'					=> $user['code'],	
-				'phone'					=> $user['phone'],	
-				'email'					=> $user['email'],
-				'type'					=> $user['type'],
-				'last_upload'			=> $user['last_fetched'],
-				'goal_calls'			=> $user['goal_calls'],
-				'group_name'			=> $this->getGroupName($user),
-				'group_count'			=> $this->getGroupCount($user['id'])
-			];
-
+			'response'				=> 200,
+			'_return'				=> true,
+			'otp'					=> $otp,
+			'id'					=> $user['id'],	
+			'name'					=> $user['name'],	
+			'company'				=> $user['company'],	
+			'code'					=> $user['code'],	
+			'phone'					=> $user['phone'],	
+			'email'					=> $user['email'],
+			'type'					=> $user['type'],
+			'last_upload'			=> $user['last_fetched'],
+			'goal_calls'			=> $user['goal_calls'],
+			'group_my'				=> $this->getMyGroupName($user['id']),
+			'group_myID'			=> $this->getMyGroupID($user['id']),
+			'group_join'			=> $this->getGroupName($user),
+			'group_joinID'			=> $this->getGroupID($user),
+			'members'				=> $this->membersCount($user['id'])
+		];
 		return $data;
 	}
 
-
-	public function getGroupCount($user)
+	public function membersCount($user)
 	{
-		return $this->db->get_where('group',['user' => $user,'df' => ''])->num_rows(); 
+		return $this->db->get_where('users',['admin' => $user,'status' => '1'])->num_rows(); 
 	}
 
 	public function getGroupName($user)
 	{
 		if($user['status'] == "1" && $user['group'] != ""){
 			return $this->db->get_where('group',['id' => $user['group']])->row_array()['name']; 
+		}
+		else{
+			return "";
+		}
+	}
+
+	public function getGroupID($user)
+	{
+		if($user['status'] == "1" && $user['group'] != ""){
+			return $this->db->get_where('group',['id' => $user['group']])->row_array()['id']; 
+		}
+		else{
+			return "";
+		}
+	}
+
+	public function getMyGroupName($user)
+	{
+		if($this->db->get_where('group',['user' => $user,'df' => ''])->row_array()){
+			return $this->db->get_where('group',['user' => $user])->row_array()['name']; 
+		}
+		else{
+			return "";
+		}
+	}
+
+	public function getMyGroupID($user)
+	{
+		if($this->db->get_where('group',['user' => $user,'df' => ''])->row_array()){
+			return $this->db->get_where('group',['user' => $user])->row_array()['id']; 
 		}
 		else{
 			return "";

@@ -20,8 +20,8 @@
 			padding-bottom: 60px;
 			font-weight: 500;
 			font-size: 20px;
-			line-height: 20px;
-			color: #3b3939;
+			line-height: 25px;
+			color: #2d2d2d;
 			letter-spacing: 1px;
 		}
 
@@ -50,7 +50,7 @@
 			font-size: 25px;
 		 }
 		 p{
-			color: #ea5e17;
+			color: #a2a2a2;
 			font-size: 15px;
 			font-weight: 500;
 			line-height: 18px;
@@ -76,9 +76,9 @@
 </head>
 <body>
 	<div class="email-otp">
-		<h4>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #ea5e17;"> Call Metrics </strong> Please use the PIN below and authenticate your account. </h4>
+		<h4>Dear <?= $name ?>,<br> You have been invited by <?= $admin ?> to join <strong style="color: #00adf2;"> Call Metrics </strong> Please use the PIN below to activate your account and get started. </h4>
 		<div class="space">
-		<span>Your PIN</span>
+		<span style="color: #00adf2">Your PIN</span>
 		<table class="tb-center">
 			<tr>
 				<td><?= $otp[0] ?></td>

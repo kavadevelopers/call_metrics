@@ -32,6 +32,8 @@ $config['mport']                = '587';
 $config['muser']                = 'noreply@kavas.in';
 $config['mpass']                = 'admin';
 
+
+$config['appLink']				= 'https://play.google.com/store/apps/details?id=#';
 /*
 |--------------------------------------------------------------------------
 | Index File

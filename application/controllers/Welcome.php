@@ -31,6 +31,6 @@ class Welcome extends CI_Controller {
 	public function test()
 	{
 		$data = ['name' => 'Sample','otp' => '12345678','admin' => 'Admin Name'];
-		$this->load->view('mail/invitation',$data);
+		$this->load->view('mail/registration',$data);
 	}
 }
