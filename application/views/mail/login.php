@@ -94,7 +94,7 @@
         </div>
 		<p></p>
 		<p>
-			This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. You cannot use or forward any attachments in the email. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.
+			This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. You cannot use or distribute the content of this email. Please notify the sender immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system.
 		</p>
 		<div class="img-otp">		
 			<a target="_blank" href="<?= $this->config->config['appLink'] ?>"><img src="<?= base_url('asset/') ?>playstore.png"></a>
