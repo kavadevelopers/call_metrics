@@ -901,7 +901,7 @@ class Api extends CI_Controller
 		if($data != ""){
 			foreach (explode("|", $data) as $key => $value) {
 				$dataArray = explode("_", $value);
-				$check = $this->db->get_where('calls',['user' => $user,'number' => $dataArray[1],'seconds' => $dataArray[1],'datetime' => date("Y-m-d H:i:s",strtotime($dataArray[2]))])->num_rows();
+				$check = $this->db->get_where('calls',['user' => $user,'datetime' => date("Y-m-d H:i:s",strtotime($dataArray[2]))])->num_rows();
 				if($check == 0){
 					$idata = [
 						'number'	=> $dataArray[1],
