@@ -27,7 +27,7 @@ class Api extends CI_Controller
 			}
 
 
-			$days = ['M','T','W','T','F','S','S'];
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
 			foreach ($days as $dkey => $dvalue) {
@@ -122,7 +122,7 @@ class Api extends CI_Controller
 			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
 			array_push($conversations, ['string' => $month_fourth,'value' => $call]);
 
-			$days = ['M','T','W','T','F','S','S'];
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
 			foreach ($days as $dkey => $dvalue) {
@@ -207,7 +207,7 @@ class Api extends CI_Controller
 			
 
 
-			$days = ['M','T','W','T','F','S','S'];
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
 			foreach ($days as $dkey => $dvalue) {
@@ -414,7 +414,7 @@ class Api extends CI_Controller
 			$call = $this->db->get_where('calls',['user' => $user,'seconds >' => '0'])->num_rows();
 			array_push($conversations, ['string' => $month_twelve,'value' => $call]);
 
-			$days = ['M','T','W','T','F','S','S'];
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
 			foreach ($days as $dkey => $dvalue) {
@@ -463,7 +463,7 @@ class Api extends CI_Controller
 			}
 
 
-			$days = ['M','T','W','T','F','S','S'];
+			$days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
 			$callsPerDay = [];
 			foreach ($days as $dkey => $dvalue) {
