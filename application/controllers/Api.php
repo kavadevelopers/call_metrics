@@ -453,13 +453,13 @@ class Api extends CI_Controller
 			$calls = [];
 			foreach ($dates as $key => $value) {
 				$call = $this->db->get_where('calls',['date' => $value,'user' => $user])->num_rows();
-				array_push($calls, ['string' => $value,'value' => $call]);
+				array_push($calls, ['string' => date('d-m-Y',strtotime($value)),'value' => $call]);
 			}
 
 			$conversations = [];
 			foreach ($dates as $key => $value) {
 				$call = $this->db->get_where('calls',['date' => $value,'user' => $user, 'seconds >' => '0'])->num_rows();
-				array_push($conversations, ['string' => $value,'value' => $call]);
+				array_push($conversations, ['string' => date('d-m-Y',strtotime($value)),'value' => $call]);
 			}
 
 
