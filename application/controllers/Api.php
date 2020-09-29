@@ -1305,6 +1305,7 @@ class Api extends CI_Controller
 			$time = $time / 60;
 		}
 
+		$str = $value;
 		if($value > 0){
 			$str = $value / $time;			
 		}
