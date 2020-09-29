@@ -663,7 +663,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,20),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,20),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,20,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCall($conversations,$seconds),20)
+				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),20)
 			];
 		}else if($type == "date"){
 			$this->db->where('date >=',$date);
@@ -739,7 +739,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,1),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,1),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,1,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCall($conversations,$seconds),1)
+				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),1)
 			];
 		}else if($type == "week"){
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
@@ -765,7 +765,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,5),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,5),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,5,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCall($conversations,$seconds),5)
+				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),5)
 			];
 		}
 
@@ -1311,6 +1311,19 @@ class Api extends CI_Controller
 		}
 		if($this->containsDecimal($str)){
 			return $this->printDecimal($str);
+		}
+		return $str;
+	}
+
+	public function getAvgCallDec($value,$time)
+	{
+		if($time > 0){
+			$time = $time / 60;
+		}
+
+		$str = $value;
+		if($value > 0){
+			$str = $value / $time;			
 		}
 		return $str;
 	}
