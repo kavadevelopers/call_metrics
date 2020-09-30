@@ -618,6 +618,33 @@ class Api extends CI_Controller
 			'name'			=> "Select member"
 		];
 		array_push($list, $ar);
+		foreach ($users->result_array() as $key => $value) {
+			$ar = [
+				'id'			=> $value['id'],
+				'name'			=> $value['name']
+			];
+			array_push($list, $ar);
+		}
+		$json = [
+			'count'				=> $users->num_rows(),
+			'spinner_list'		=> $list
+		];
+		$this->response($json);
+	}
+
+	public function get_goal_usersnew()
+	{
+		$this->db->where('admin',$this->input->post('user'));
+		$this->db->where('status','1');
+		$this->db->order_by('group','desc');
+		$users = $this->db->get('users');
+
+		$list = [];
+		$ar = [
+			'id'			=> "",
+			'name'			=> "Select member"
+		];
+		array_push($list, $ar);
 		array_push($list, ['id' => $this->input->post('user'),'name' => 'My goal']);
 		foreach ($users->result_array() as $key => $value) {
 			$ar = [
@@ -1341,6 +1368,13 @@ class Api extends CI_Controller
 	        return true;
 	    }
 	    return false;
+	}
+
+	public function daysBetweenDates($start,$end)
+	{
+		
+		echo (strtotime($end) - strtotime($start)) / (60 * 60 * 24);
+		
 	}
 }
 ?>
