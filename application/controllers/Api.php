@@ -1288,7 +1288,6 @@ class Api extends CI_Controller
 		}else{
 			return '0%';
 		}
-		
 	}
 
 	public function getMinuts($str)
@@ -1308,7 +1307,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = $value / $time;			
+			$str = $time / $value;			
 		}
 		if($this->containsDecimal($str)){
 			return $this->printDecimal($str);
@@ -1324,7 +1323,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = $value / $time;			
+			$str = $time / $value;			
 		}
 		return $str;
 	}
