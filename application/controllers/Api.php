@@ -1279,7 +1279,7 @@ class Api extends CI_Controller
 			if($type){
 				$data = $data / 60;
 			}
-			$goal = $goal / $time;
+			$goal = ($goal / 20) * $time;
 			$percent = ($data * 100) / $goal;
 			// if($percent > 100){
 			// 	$percent = 100;
