@@ -1325,7 +1325,7 @@ class Api extends CI_Controller
 		if($value > 0){
 			$str = $time / $value;			
 		}
-		return round($str,2);
+		return number_format($str,2);
 	}
 
 	public function printDecimal($str)
