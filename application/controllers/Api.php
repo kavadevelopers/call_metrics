@@ -664,7 +664,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,20),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,20),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,20,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),20)
+				'goal_avg_call'		=> $this->getAvgCallDec($conversations,$seconds)
 			];
 		}else if($type == "date"){
 			$this->db->where('date >=',$date);
