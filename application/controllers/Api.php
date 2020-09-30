@@ -618,6 +618,7 @@ class Api extends CI_Controller
 			'name'			=> "Select member"
 		];
 		array_push($list, $ar);
+		array_push($list, ['id' => $this->input->post('user'),'name' => 'SELF']);
 		foreach ($users->result_array() as $key => $value) {
 			$ar = [
 				'id'			=> $value['id'],
