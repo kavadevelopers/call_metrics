@@ -691,7 +691,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,1),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,1),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,1,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),1)
+				'goal_avg_call'		=> $this->getGoalAvarage($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds))
 			];
 		}else if($type == "date"){
 			$this->db->where('date >=',$date);
@@ -767,7 +767,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,20),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,20),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,20,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),20)
+				'goal_avg_call'		=> $this->getGoalAvarage($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds))
 			];
 		}else if($type == "week"){
 			$this->db->where('date >=',$this->x_week_range(date('Y-m-d'))[0]);
@@ -793,7 +793,7 @@ class Api extends CI_Controller
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,5),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,5),
 				'goal_minute'		=> $this->getGoal($_user['goal_minutes'],$seconds,5,true),
-				'goal_avg_call'		=> $this->getGoal($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds),5)
+				'goal_avg_call'		=> $this->getGoalAvarage($_user['goal_avg_call'],$this->getAvgCallDec($conversations,$seconds))
 			];
 		}
 
@@ -1308,6 +1308,23 @@ class Api extends CI_Controller
 			}
 			$goal = ($goal / 20) * $time;
 			$percent = ($data * 100) / $goal;
+			// if($percent > 100){
+			// 	$percent = 100;
+			// }
+			return $this->printDecimal($percent).'%';
+		}else{
+			return '0%';
+		}
+	}
+
+	public function getGoalAvarage($goal,$data)
+	{
+		if($goal != 0){
+			if($type){
+				$data = $data / 60;
+			}
+			//$goal = ($goal / 20) * $time;
+			$percent = ($data / $goal) * 100;
 			// if($percent > 100){
 			// 	$percent = 100;
 			// }
