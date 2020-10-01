@@ -1320,11 +1320,20 @@ class Api extends CI_Controller
 	public function getGoalAvarage($goal,$data)
 	{
 		if($goal != 0){
-			//$goal = ($goal / 20) * $time;
-			$percent = ($data / $goal) * 100;
-			// if($percent > 100){
-			// 	$percent = 100;
-			// }
+			
+
+			if($this->containsDecimal($data)){
+				$arr = explode('.', $data);
+				$seconds = ($arr[0] * 60) + $arr[1];
+			}else{
+				$seconds = ($arr[0] * 60);
+			}
+
+			$goal = $goal * 60;
+
+			$percent = ($seconds / $goal) * 100;
+
+
 			return $this->printDecimal($percent).'%';
 		}else{
 			return '0%';
