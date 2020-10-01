@@ -686,7 +686,7 @@ class Api extends CI_Controller
 			$json = [
 				'calls'				=> $calls,
 				'conversations'		=> $conversations,
-				'seconds'			=> $this->getMinuts($seconds),
+				'seconds'			=> $seconds,
 				'avg_call'			=> $this->getAvgCall($conversations,$seconds),
 				'goal_calls'		=> $this->getGoal($_user['goal_calls'],$calls,1),
 				'goal_conver'		=> $this->getGoal($_user['goal_conversation'],$conversations,1),
