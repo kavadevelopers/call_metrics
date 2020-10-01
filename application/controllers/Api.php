@@ -1342,7 +1342,9 @@ class Api extends CI_Controller
 
 	public function getMinuts($str)
 	{
-		$str = $str / 60;
+		$minutes = floor(($str / 60) % 60);
+		$seconds = $str % 60;
+		$str = $minutes.".".$seconds;
 		if($this->containsDecimal($str)){
 			return $this->printDecimal($str);
 		}
