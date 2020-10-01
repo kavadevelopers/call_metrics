@@ -1354,7 +1354,7 @@ class Api extends CI_Controller
 	public function getAvgCall($value,$time)
 	{
 		if($time > 0){
-			$time = $time / 60;
+			$time = $time;
 		}
 
 		$str = $value;
@@ -1370,7 +1370,7 @@ class Api extends CI_Controller
 	public function getAvgCallDec($value,$time)
 	{
 		if($time > 0){
-			$time = $time / 60;
+			$time = $time;
 		}
 
 		$str = $value;
