@@ -1352,12 +1352,12 @@ class Api extends CI_Controller
 	public function getAvgCall($value,$time)
 	{
 		if($time > 0){
-			$time = $time;
+			$time = $time / 60;
 		}
 
 		$str = $value;
 		if($value > 0){
-			$str = $time / $value;			
+			$str = ($time / $value) * 100;			
 		}
 		if($this->containsDecimal($str)){
 			return $this->printDecimal($str);
@@ -1368,12 +1368,12 @@ class Api extends CI_Controller
 	public function getAvgCallDec($value,$time)
 	{
 		if($time > 0){
-			$time = $time;
+			$time = $time / 60; 
 		}
 
 		$str = $value;
 		if($value > 0){
-			$str = $time / $value;			
+			$str = ($time / $value) * 100;			
 		}
 		return number_format($str,2);
 	}
