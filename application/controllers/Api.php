@@ -1329,7 +1329,7 @@ class Api extends CI_Controller
 				$seconds = ($data * 60);
 			}
 
-			$goal = $goal * 60;
+			//$goal = $goal * 60;
 
 			$percent = ($seconds / $goal) * 100;
 
