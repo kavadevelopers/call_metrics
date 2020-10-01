@@ -1357,7 +1357,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = ($time / $value) * 100;			
+			$str = ($time / $value) * 60;			
 		}
 		if($this->containsDecimal($str)){
 			return explode('.', $str)[0];
@@ -1373,7 +1373,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = ($time / $value) * 100;			
+			$str = ($time / $value) * 60;			
 		}
 		return number_format($str,2);
 	}
