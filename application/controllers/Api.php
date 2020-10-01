@@ -1326,7 +1326,7 @@ class Api extends CI_Controller
 				$arr = explode('.', $data);
 				$seconds = ($arr[0] * 60) + $arr[1];
 			}else{
-				$seconds = ($arr[0] * 60);
+				$seconds = ($data * 60);
 			}
 
 			$goal = $goal * 60;
