@@ -1329,9 +1329,9 @@ class Api extends CI_Controller
 				$seconds = ($data * 60);
 			}
 
-			//$goal = $goal * 60;
+			$goal = $goal * 60;
 
-			$percent = ($seconds / $goal);
+			$percent = ($seconds / $goal) * 100;
 
 
 			return $this->printDecimal($percent).'%';
@@ -1357,7 +1357,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = ($time / $value) * 60;			
+			$str = ($time / $value) * 100;			
 		}
 		if($this->containsDecimal($str)){
 			return explode('.', $str)[0];
@@ -1373,7 +1373,7 @@ class Api extends CI_Controller
 
 		$str = $value;
 		if($value > 0){
-			$str = ($time / $value) * 60;			
+			$str = ($time / $value) * 100;			
 		}
 		return number_format($str,2);
 	}
