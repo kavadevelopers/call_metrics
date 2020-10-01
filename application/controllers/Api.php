@@ -1331,7 +1331,7 @@ class Api extends CI_Controller
 
 			//$goal = $goal * 60;
 
-			$percent = ($seconds / $goal) * 100;
+			$percent = ($seconds / $goal);
 
 
 			return $this->printDecimal($percent).'%';
