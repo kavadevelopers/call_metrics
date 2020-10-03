@@ -3,8 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Welcome extends CI_Controller {
 
-	public function index()
+	public function indexa()
 	{
+
 		if($this->db->get_where('setting',['id' => '1'])->row_array()['cunstruction'] == '0'){
 			if($this->session->userdata('id')){
 				redirect(base_url('dashboard'));
